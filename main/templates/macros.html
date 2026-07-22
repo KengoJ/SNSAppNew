@@ -1,0 +1,7 @@
+{% macro validate_picture(user) %}
+{% if user.picture_path %}
+    <img class="profile-image" src="{{ url_for('static', filename=user.picture_path) }}" alt="{{ user.username }}のアイコン">
+{% else %}
+    <img class="profile-image" src="{{ url_for('static', filename='imgs/no_img.png') }}" alt="デフォルトアイコン">
+{% endif %}
+{% endmacro %}

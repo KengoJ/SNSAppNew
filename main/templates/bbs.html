@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Home / BBS</p>
+        <h1>掲示板</h1>
+        <p class="lead mt-2">ログイン中: {{ current_user.username }}</p>
+    </div>
+</section>
+
+<div class="stack">
+    <form action="/thread" method="post">
+        <h2 class="mb-3"><i class="fa-solid fa-plus me-2"></i>新しいスレッドを作る</h2>
+        <div class="row g-3 align-items-end">
+            <div class="col-md">
+                <label for="thread">スレッド名</label>
+                <input id="thread" class="form-control" type="text" name="thread" placeholder="例: 今日の雑談" required>
+            </div>
+            <div class="col-md-auto">
+                <button class="btn btn-primary px-4" type="submit">作成する</button>
+            </div>
+        </div>
+    </form>
+
+    <section class="discord-card">
+        <h2 class="mb-3"><i class="fa-solid fa-hashtag me-2"></i>スレッド一覧</h2>
+        {% if threads %}
+        <div class="grid-cards">
+            {% for thread in threads %}
+            <a class="thread-card thread-link" href="{{ url_for('thread', thread=thread.threadname) }}" aria-label="{{ thread.threadname }}を開く">
+                <h3 class="h5 mb-2"># {{ thread.threadname }}</h3>
+                <p class="muted-text mb-3">カードをクリックして投稿を見る</p>
+                <span class="btn btn-primary btn-sm">開く</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">まだスレッドがありません。最初の話題を作ってみましょう。</div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

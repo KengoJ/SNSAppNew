@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block content %}
+<section class="auth-page">
+    <form class="auth-card" action="/login" method="POST">
+        <div class="text-center mb-4">
+            <img class="auth-logo mb-3" src="{{ url_for('static', filename='imgs/sign_in/sign_in_page.png') }}" alt="ログインアイコン">
+            <p class="eyebrow">Welcome back</p>
+            <h1>ログイン</h1>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash mb-3">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="mb-3">
+            <label for="login_user_id">ユーザーID</label>
+            <input id="login_user_id" type="text" name="login_user_id" class="form-control" placeholder="example1234" required autofocus>
+        </div>
+        <div class="mb-3">
+            <label for="password">パスワード</label>
+            <input id="password" type="password" name="password" class="form-control" placeholder="Password" required>
+        </div>
+        <div class="form-check mb-4">
+            <input id="remember" class="form-check-input" type="checkbox">
+            <label class="form-check-label" for="remember">ログイン状態を保存する</label>
+        </div>
+        <button class="btn btn-primary w-100" type="submit">ログイン</button>
+
+        <div class="text-center mt-4">
+            <a href="/signup">新規登録</a>
+            <span class="muted-text mx-2">/</span>
+            <a href="/forgot_password">パスワードを忘れた場合</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

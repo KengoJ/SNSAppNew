@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="discord-card">
+    <p class="eyebrow">Posted</p>
+    <h1><i class="fa-solid fa-circle-check me-2"></i>書き込み完了</h1>
+    <p class="lead mt-2">投稿を保存しました。</p>
+    <div class="d-flex flex-wrap gap-2 mt-4">
+        <form class="p-0 border-0 shadow-none bg-transparent" action="/thread" method="post">
+            <input type="hidden" name="thread" value="{{ thread.threadname }}">
+            <button class="btn btn-primary" type="submit">スレッドへ戻る</button>
+        </form>
+        <a class="btn btn-secondary" href="{{ url_for('bbs') }}">BBSへ戻る</a>
+    </div>
+</section>
+{% endblock %}

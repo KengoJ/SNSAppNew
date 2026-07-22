@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% from "macros.html" import validate_picture %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Connections</p>
+        <h1>フォロー管理</h1>
+        <p class="lead mt-2">フォロー中・フォロワーを確認して、プロフィールやDMへ移動できます。</p>
+    </div>
+</section>
+
+<div class="stack">
+    {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+    <section class="discord-card">
+        <h2 class="mb-3"><i class="fa-solid fa-user-check me-2"></i>フォロー一覧</h2>
+        {% if follow_users %}
+        <div class="grid-cards">
+            {% for follow_user in follow_users %}
+            <article class="user-card">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    {{ validate_picture(follow_user) }}
+                    <div>
+                        <h3 class="h5 mb-1">{{ follow_user.username }}</h3>
+                        <p class="muted-text mb-0">フォロー中</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ url_for('profile', user_id=follow_user.id) }}" class="btn btn-secondary btn-sm">プロフィール</a>
+                    <a href="{{ url_for('chat', friend_id=follow_user.id) }}" class="btn btn-primary btn-sm" role="button">DM</a>
+                    <form class="p-0 border-0 shadow-none bg-transparent" method="POST" action="{{ url_for('follow_lift') }}">
+                        <input type="hidden" name="opponent_id" value="{{ follow_user.id }}">
+                        <input class="btn btn-secondary btn-sm" type="submit" value="フォロー解除">
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">まだフォロー中のユーザーはいません。</div>
+        {% endif %}
+    </section>
+
+    <section class="discord-card">
+        <h2 class="mb-3"><i class="fa-solid fa-users me-2"></i>フォロワー一覧</h2>
+        {% if follower_users %}
+        <div class="grid-cards">
+            {% for follower_user in follower_users %}
+            <article class="user-card">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    {{ validate_picture(follower_user) }}
+                    <div>
+                        <h3 class="h5 mb-1">{{ follower_user.username }}</h3>
+                        <p class="muted-text mb-0">あなたをフォローしています</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ url_for('profile', user_id=follower_user.id) }}" class="btn btn-secondary btn-sm">プロフィール</a>
+                    <a href="{{ url_for('chat', friend_id=follower_user.id) }}" class="btn btn-primary btn-sm">DM</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">まだフォロワーはいません。</div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

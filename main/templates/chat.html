@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% from "macros.html" import validate_picture %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Direct message</p>
+        <h1>{{ friend.username }}</h1>
+        <p class="lead mt-2">DMで直接やり取りできます。</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-secondary" href="{{ url_for('profile', user_id=friend.id) }}">プロフィール</a>
+        <a class="btn btn-secondary" href="{{ url_for('follow_management') }}"><i class="fa-solid fa-arrow-left me-2"></i>戻る</a>
+    </div>
+</section>
+
+<div class="stack" data-chat-page>
+    <section class="chat-list" id="chat-list">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.from_user_id == current_user.id %}
+                <article class="message-card mine">
+                    {{ validate_picture(current_user) }}
+                    <div>
+                        <strong>{{ current_user.username }}</strong>
+                        <p class="mb-2">{{ message.message }}</p>
+                        <span class="message-meta">{{ message.create_date.strftime('%H:%M') }}</span>
+                    </div>
+                </article>
+                {% else %}
+                <article class="message-card">
+                    {{ validate_picture(friend) }}
+                    <div>
+                        <strong>{{ friend.username }}</strong>
+                        <p class="mb-2">{{ message.message }}</p>
+                        <span class="message-meta">{{ message.create_date.strftime('%H:%M') }}</span>
+                    </div>
+                </article>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+        <div class="empty-state" id="chat-empty">まだメッセージはありません。最初の一通を送ってみましょう。</div>
+        {% endif %}
+    </section>
+
+    <form id="chat-form" method="POST" action="{{ url_for('chat', friend_id=friend.id) }}">
+        <label for="message">メッセージ</label>
+        <textarea id="message" class="form-control" name="message" placeholder="メッセージを書く" required></textarea>
+        <input class="btn btn-primary mt-3" type="submit" value="送信">
+    </form>
+</div>
+{% endblock %}

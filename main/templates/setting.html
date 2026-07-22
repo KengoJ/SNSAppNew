@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% from "macros.html" import validate_picture %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Portfolio</p>
+        <h1>マイページ設定</h1>
+        <p class="lead mt-2">プロフィールをポートフォリオとして見せられるようになりました。</p>
+    </div>
+    <a class="btn btn-secondary" href="{{ url_for('profile', user_id=current_user.id) }}">公開プロフィールを見る</a>
+</section>
+
+<form method="post" action="/setting" enctype="multipart/form-data">
+    {% for message in get_flashed_messages() %}
+    <div class="flash mb-3">{{ message }}</div>
+    {% endfor %}
+
+    <div class="text-center mb-4">
+        {{ validate_picture(current_user) }}
+        <h2 class="h4 mt-3">{{ current_user.username }}</h2>
+        <p class="muted-text">@{{ current_user.login_user_id }}</p>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="user_name">ユーザー名</label>
+            <input id="user_name" type="text" class="form-control" name="user_name" placeholder="{{ current_user.username }}">
+        </div>
+        <div class="col-md-6">
+            <label for="login_user_id">ユーザーID</label>
+            <input id="login_user_id" type="text" class="form-control" name="login_user_id" placeholder="{{ current_user.login_user_id }}">
+        </div>
+        <div class="col-12">
+            <label for="bio">自己紹介</label>
+            <textarea id="bio" class="form-control" name="bio" placeholder="作っているもの、得意なこと、好きな技術など">{{ current_user.bio or '' }}</textarea>
+        </div>
+        <div class="col-md-6">
+            <label for="portfolio_url">ポートフォリオURL</label>
+            <input id="portfolio_url" type="url" class="form-control" name="portfolio_url" placeholder="https://example.com" value="{{ current_user.portfolio_url or '' }}">
+        </div>
+        <div class="col-md-6">
+            <label for="skills">スキル</label>
+            <input id="skills" type="text" class="form-control" name="skills" placeholder="Python, Flask, HTML/CSS" value="{{ current_user.skills or '' }}">
+        </div>
+        <div class="col-12">
+            <label for="file">ユーザーアイコン</label>
+            <input id="file" type="file" class="form-control" name="file">
+        </div>
+    </div>
+    <button class="btn btn-primary mt-4" type="submit">変更を保存</button>
+</form>
+{% endblock %}

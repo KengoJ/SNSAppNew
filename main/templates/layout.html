@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page_title|default('SNS BBS') }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="discord-sidebar">
+            <a class="brand" href="{{ url_for('bbs') }}">
+                <span class="brand-icon"><i class="fa-solid fa-comments"></i></span>
+                <span>SNS BBS</span>
+            </a>
+
+            <nav class="side-nav" aria-label="メインメニュー">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('bbs') }}"><i class="fa-solid fa-hashtag"></i><span>BBS</span></a>
+                <a href="{{ url_for('user_search') }}"><i class="fa-solid fa-magnifying-glass"></i><span>ユーザー検索</span></a>
+                <a href="{{ url_for('follow_management') }}"><i class="fa-solid fa-user-group"></i><span>フォロー管理</span></a>
+                <a href="{{ url_for('notifications') }}"><i class="fa-solid fa-bell"></i><span>通知{% if unread_notification_count %}<b class="nav-badge">{{ unread_notification_count }}</b>{% endif %}</span></a>
+                <a href="{{ url_for('setting') }}"><i class="fa-solid fa-gear"></i><span>マイページ</span></a>
+                <a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i><span>ログアウト</span></a>
+                {% else %}
+                <a href="{{ url_for('login') }}"><i class="fa-solid fa-right-to-bracket"></i><span>ログイン</span></a>
+                <a href="{{ url_for('signup') }}"><i class="fa-solid fa-user-plus"></i><span>新規登録</span></a>
+                {% endif %}
+            </nav>
+
+            {% if current_user.is_authenticated %}
+            <div class="side-profile">
+                <div class="avatar-mini"><i class="fa-solid fa-user"></i></div>
+                <div>
+                    <small>ログイン中</small>
+                    <strong>{{ current_user.username }}</strong>
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+
+        <header class="mobile-header">
+            <a class="mobile-brand" href="{{ url_for('bbs') }}"><i class="fa-solid fa-comments"></i> SNS BBS</a>
+            <div class="mobile-actions">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('bbs') }}" aria-label="BBS"><i class="fa-solid fa-hashtag"></i></a>
+                <a href="{{ url_for('notifications') }}" aria-label="通知"><i class="fa-solid fa-bell"></i>{% if unread_notification_count %}<b class="mobile-badge">{{ unread_notification_count }}</b>{% endif %}</a>
+                <a href="{{ url_for('setting') }}" aria-label="マイページ"><i class="fa-solid fa-gear"></i></a>
+                {% else %}
+                <a href="{{ url_for('login') }}">ログイン</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <main class="content-area">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="toast-area"></div>
+    <div class="loading-overlay" id="loading-overlay" aria-hidden="true">
+        <div class="loading-box">
+            <span class="loading-spinner"></span>
+            <span>読み込み中...</span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

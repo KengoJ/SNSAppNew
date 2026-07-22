@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Notifications</p>
+        <h1>通知</h1>
+        <p class="lead mt-2">この画面を開くと、通知バッジの数字は自動でリセットされます。</p>
+    </div>
+</section>
+
+<section class="stack">
+    {% if notifications %}
+        {% for item in notifications %}
+        <article class="notification-card {% if not item.is_read %}is-unread{% endif %}">
+            <div class="notification-icon">
+                {% if item.kind == 'like' %}
+                <i class="fa-solid fa-heart"></i>
+                {% elif item.kind == 'reply' %}
+                <i class="fa-solid fa-reply"></i>
+                {% elif item.kind == 'dm' %}
+                <i class="fa-solid fa-message"></i>
+                {% elif item.kind == 'follow' %}
+                <i class="fa-solid fa-user-plus"></i>
+                {% else %}
+                <i class="fa-solid fa-bell"></i>
+                {% endif %}
+            </div>
+            <div>
+                <p class="mb-1">{{ item.message }}</p>
+                <span class="message-meta">{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+        </article>
+        {% endfor %}
+    {% else %}
+    <div class="empty-state">通知はまだありません。</div>
+    {% endif %}
+</section>
+{% endblock %}

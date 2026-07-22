@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% from "macros.html" import validate_picture %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Search</p>
+        <h1>ユーザー検索</h1>
+        <p class="lead mt-2">ユーザー名で検索して、プロフィール確認・フォロー・DMができます。</p>
+    </div>
+</section>
+
+<div class="stack">
+    <form id="user-search-form" action="/user_search" method="post">
+        {% for message in get_flashed_messages() %}
+        <div class="flash mb-3">{{ message }}</div>
+        {% endfor %}
+        <div class="row g-3 align-items-end">
+            <div class="col-md">
+                <label for="username">ユーザー名</label>
+                <input id="username" type="text" name="username" class="form-control" placeholder="検索したい名前を入力">
+            </div>
+            <div class="col-md-auto">
+                <button class="btn btn-primary px-4" type="submit"><i class="fa-solid fa-magnifying-glass me-2"></i>検索</button>
+            </div>
+        </div>
+    </form>
+
+    <section class="discord-card">
+        <h2 class="mb-3">検索結果</h2>
+        <div class="grid-cards" id="user-search-results">
+            {% if users %}
+                {% for user in users %}
+                <article class="user-card">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        {{ validate_picture(user) }}
+                        <div>
+                            <h3 class="h5 mb-1">{{ user.username }}</h3>
+                            <p class="muted-text mb-0">{{ user.bio or 'プロフィール未設定' }}</p>
+                        </div>
+                    </div>
+
+                    {% if user.skills %}
+                    <p class="muted-text small">{{ user.skills }}</p>
+                    {% endif %}
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-secondary btn-sm" href="{{ url_for('profile', user_id=user.id) }}">プロフィール</a>
+                        {% if user.id != current_user.id %}
+                        <a class="btn btn-primary btn-sm" href="{{ url_for('chat', friend_id=user.id) }}">DM</a>
+                        {% endif %}
+                        {% if user.id == current_user.id %}
+                        <span class="muted-text">自分のアカウントです</span>
+                        {% elif user.state_from_currentuser == 1 %}
+                        <form class="p-0 border-0 shadow-none bg-transparent" method="POST" action="{{ url_for('follow_lift') }}">
+                            <input type="hidden" name="opponent_id" value="{{ user.id }}">
+                            <input class="btn btn-secondary btn-sm" type="submit" value="フォロー解除">
+                        </form>
+                        {% else %}
+                        <form class="p-0 border-0 shadow-none bg-transparent" method="POST" action="{{ url_for('follow') }}">
+                            <input type="hidden" name="to_user_id" value="{{ user.id }}">
+                            <input class="btn btn-primary btn-sm" type="submit" value="フォロー">
+                        </form>
+                        {% endif %}
+                    </div>
+                </article>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="empty-state {% if users %}d-none{% endif %}" id="user-search-empty">キーワードを入力して検索してください。</div>
+    </section>
+</div>
+{% endblock %}

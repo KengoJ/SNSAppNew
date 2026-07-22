@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Thread</p>
+        <h1># {{ thread }}</h1>
+        <p class="lead mt-2">投稿・いいね・返信をここでまとめて楽しめます。</p>
+    </div>
+    <a class="btn btn-secondary" href="{{ url_for('bbs') }}"><i class="fa-solid fa-arrow-left me-2"></i>BBSへ戻る</a>
+</section>
+
+<div class="stack" data-thread-page data-thread-name="{{ thread }}" data-current-user-id="{{ current_user.id }}">
+    <section class="discord-card">
+        <div class="row g-3 align-items-end">
+            <div class="col-md">
+                <label for="entry-search">投稿検索</label>
+                <input id="entry-search" class="form-control" type="search" placeholder="投稿内容を検索">
+            </div>
+            <div class="col-md-auto">
+                <button class="btn btn-secondary px-4" type="button" id="entry-search-clear">クリア</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="post-list" id="entry-list">
+        {% for entry in entry_payload %}
+        <article class="post-card" data-entry-id="{{ entry.id }}">
+            <div class="post-main">
+                <div class="post-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="post-body">
+                    <div class="post-head">
+                        <strong>{{ entry.name }}</strong>
+                        <span>{{ entry.date }}</span>
+                    </div>
+                    <p>{{ entry.article }}</p>
+                    <div class="post-actions">
+                        <button class="action-button {% if entry.liked_by_current_user %}is-active{% endif %}" type="button" data-like-entry data-entry-id="{{ entry.id }}">
+                            <i class="fa-solid fa-heart"></i>
+                            <span data-like-count>{{ entry.likes_count }}</span>
+                        </button>
+                        <button class="action-button" type="button" data-reply-toggle>
+                            <i class="fa-solid fa-reply"></i>
+                            <span>返信</span>
+                        </button>
+                        {% if entry.can_delete %}
+                        <button class="action-button danger" type="button" data-delete-entry data-entry-id="{{ entry.id }}">
+                            <i class="fa-solid fa-trash"></i>
+                            <span>削除</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="reply-panel">
+                <div class="reply-list" data-reply-list>
+                    {% for reply in entry.replies %}
+                    <div class="reply-item">
+                        <strong>{{ reply.username }}</strong>
+                        <p>{{ reply.body }}</p>
+                        <span>{{ reply.created_at }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <form class="reply-form p-0 border-0 shadow-none bg-transparent" data-reply-form data-entry-id="{{ entry.id }}">
+                    <input class="form-control" name="body" placeholder="返信を書く" required>
+                    <button class="btn btn-primary btn-sm" type="submit">返信</button>
+                </form>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+    <div class="empty-state {% if articles %}d-none{% endif %}" id="entry-empty">投稿がありません。</div>
+
+    <form id="entry-form" action="/add" method="post">
+        <h2 class="mb-3"><i class="fa-solid fa-paper-plane me-2"></i>投稿する</h2>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                <div class="flash mb-3">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <input type="hidden" name="thread" value="{{ thread }}">
+        <label for="article">投稿内容</label>
+        <textarea id="article" class="form-control" name="article" placeholder="メッセージを書いてください" required></textarea>
+        <button class="btn btn-primary mt-3" type="submit">送信</button>
+    </form>
+</div>
+
+<div class="modal fade" id="delete-entry-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content discord-modal">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa-solid fa-triangle-exclamation me-2"></i>投稿を削除しますか？</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="閉じる"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">この操作は取り消せません。削除してもよろしいですか？</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <button type="button" class="btn btn-danger" id="delete-entry-confirm">削除する</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
